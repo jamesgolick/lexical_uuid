@@ -50,4 +50,30 @@ describe "LexicalUUID" do
       end
     end
   end
+
+  describe "initializing a uuid from a timestamp and worker_id" do
+    before do
+      @timestamp = 15463021018891620831
+      @worker_id = 9964740229835689317
+      @uuid      = LexicalUUID.new(@timestamp, @worker_id)
+    end
+
+    it "sets the timestamp" do
+      @uuid.timestamp.should == @timestamp
+    end
+
+    it "sets the worker_id" do
+      @uuid.worker_id.should == @worker_id
+    end
+  end
+
+  describe "converting a uuid in to a guid" do
+    before do
+      @uuid = LexicalUUID.new(15463021018891620831, 9964740229835689317)
+    end
+    
+    it "matches other uuid->guid implementations" do
+      @uuid.to_guid.should == "d697afb0-a96f-11df-8a49-de718e668d65"
+    end
+  end
 end

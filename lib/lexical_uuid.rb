@@ -45,13 +45,16 @@ class LexicalUUID
 
   attr_reader :worker_id, :timestamp
 
-  def initialize(bytes = nil)
-    case bytes
+  def initialize(timestamp = nil, worker_id = nil)
+    case timestamp
+    when Fixnum, Bignum
+      @timestamp = timestamp
+      @worker_id = worker_id
     when String
-      if bytes.size != 16
-        raise ArgumentError, "#{bytes} was incorrectly sized. Must be 16 bytes."
+      if timestamp.size != 16
+        raise ArgumentError, "#{timestamp} was incorrectly sized. Must be 16 timestamp."
       end
-      time_high, time_low, worker_high, worker_low = bytes.unpack("NNNN")
+      time_high, time_low, worker_high, worker_low = timestamp.unpack("NNNN")
       @timestamp = (time_high << 32) | time_low
       @worker_id = (worker_high << 32) | worker_low
     when nil
@@ -62,8 +65,16 @@ class LexicalUUID
 
   def to_bytes
     [timestamp >> 32,
-     timestamp & 0xffffffff,
-     worker_id >> 32,
-     worker_id & 0xffffffff].pack("NNNN")
+      timestamp & 0xffffffff,
+      worker_id >> 32,
+      worker_id & 0xffffffff].pack("NNNN")
+  end
+
+  # Also borrowed from simple_uuid
+  def to_guid
+    elements     = to_bytes.unpack("NnnCCa6")
+    node         = elements[-1].unpack('C*')
+    elements[-1] = '%02x%02x%02x%02x%02x%02x' % node
+    "%08x-%04x-%04x-%02x%02x-%s" % elements
   end
 end

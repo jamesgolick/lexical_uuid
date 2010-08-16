@@ -93,6 +93,10 @@ class LexicalUUID
         worker_id == other.worker_id
   end
 
+  def eql?(other)
+    self == other
+  end
+
   private
     def from_bytes(bytes)
       time_high, time_low, worker_high, worker_low = bytes.unpack("NNNN")

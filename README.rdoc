@@ -2,6 +2,10 @@
 
 UUIDs that are byte-ordered lamport clocks (timestamp, worker_id). Much simpler than type-1 UUID's crappy, weirdo layout.
 
+= Disclaimer
+
+This won't work on 32bit platforms. Fuck 32bit platforms.
+
 = Install
   
   sudo gem install lexical_uuid

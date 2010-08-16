@@ -97,6 +97,10 @@ class LexicalUUID
     self == other
   end
 
+  def hash
+    to_bytes.hash
+  end
+
   private
     def from_bytes(bytes)
       time_high, time_low, worker_high, worker_low = bytes.unpack("NNNN")

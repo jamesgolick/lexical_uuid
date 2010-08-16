@@ -145,4 +145,18 @@ describe "LexicalUUID" do
       LexicalUUID.new(123, 223).should_not eql(LexicalUUID.new(123, 123))
     end
   end
+
+  describe "hash" do
+    it "has the same hash if the timestamp/worker_id are the same" do
+      LexicalUUID.new(123, 123).hash.should == LexicalUUID.new(123, 123).hash
+    end
+
+    it "has a different hash when the timestamps are different" do
+      LexicalUUID.new(223, 123).hash.should_not == LexicalUUID.new(123, 123).hash
+    end
+
+    it "has a different hash when the worker_ids are not equalc" do
+      LexicalUUID.new(123, 223).hash.should_not == LexicalUUID.new(123, 123).hash
+    end
+  end
 end

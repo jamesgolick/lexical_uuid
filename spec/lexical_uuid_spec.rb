@@ -90,4 +90,18 @@ describe "LexicalUUID" do
       @uuid.worker_id.should == 9964740229835689317
     end
   end
+
+  describe "initializing with a timestamp with no worker_id" do
+    before do
+      @uuid = LexicalUUID.new(12345)
+    end
+
+    it "sets the timestamp" do
+      @uuid.timestamp.should == 12345
+    end
+
+    it "uses the default worker_id" do
+      @uuid.worker_id.should == LexicalUUID.worker_id
+    end
+  end
 end

@@ -49,7 +49,7 @@ class LexicalUUID
     case timestamp
     when Fixnum, Bignum
       @timestamp = timestamp
-      @worker_id = worker_id
+      @worker_id = worker_id || self.class.worker_id
     when String
       case timestamp.size
       when 16

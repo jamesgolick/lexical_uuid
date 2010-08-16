@@ -61,6 +61,9 @@ class LexicalUUID
         raise ArgumentError, 
           "#{timestamp} was incorrectly sized. Must be 16 timestamp."
       end
+    when Time
+      @timestamp = timestamp.stamp
+      @worker_id = self.class.worker_id
     when nil
       @worker_id = self.class.worker_id
       @timestamp = Time.stamp

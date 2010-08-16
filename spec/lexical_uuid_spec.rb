@@ -159,4 +159,15 @@ describe "LexicalUUID" do
       LexicalUUID.new(123, 223).hash.should_not == LexicalUUID.new(123, 123).hash
     end
   end
+
+  describe "initializing with a time object" do
+    before do
+      @time = Time.now
+      @uuid = LexicalUUID.new(@time)
+    end
+
+    it "uses the time's stamp object" do
+      @uuid.timestamp.should == @time.stamp
+    end
+  end
 end

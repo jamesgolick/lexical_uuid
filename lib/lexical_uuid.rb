@@ -51,13 +51,16 @@ class LexicalUUID
       @timestamp = timestamp
       @worker_id = worker_id
     when String
-      if timestamp.size != 16
+      case timestamp.size
+      when 16
+        from_bytes(timestamp)
+      when 36
+        elements = timestamp.split("-")
+        from_bytes(elements.join.to_a.pack('H32'))
+      else
         raise ArgumentError, 
           "#{timestamp} was incorrectly sized. Must be 16 timestamp."
       end
-      time_high, time_low, worker_high, worker_low = timestamp.unpack("NNNN")
-      @timestamp = (time_high << 32) | time_low
-      @worker_id = (worker_high << 32) | worker_low
     when nil
       @worker_id = self.class.worker_id
       @timestamp = Time.stamp
@@ -78,4 +81,11 @@ class LexicalUUID
     elements[-1] = '%02x%02x%02x%02x%02x%02x' % node
     "%08x-%04x-%04x-%02x%02x-%s" % elements
   end
+
+  private
+    def from_bytes(bytes)
+      time_high, time_low, worker_high, worker_low = bytes.unpack("NNNN")
+      @timestamp = (time_high << 32) | time_low
+      @worker_id = (worker_high << 32) | worker_low
+    end
 end

@@ -76,4 +76,18 @@ describe "LexicalUUID" do
       @uuid.to_guid.should == "d697afb0-a96f-11df-8a49-de718e668d65"
     end
   end
+
+  describe "initializing from a guid" do
+    before do
+      @uuid = LexicalUUID.new("d697afb0-a96f-11df-8a49-de718e668d65")
+    end
+    
+    it "correctly initializes the timestamp" do
+      @uuid.timestamp.should == 15463021018891620831
+    end
+
+    it "correctly initializes the worker_id" do
+      @uuid.worker_id.should == 9964740229835689317
+    end
+  end
 end

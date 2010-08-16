@@ -82,6 +82,17 @@ class LexicalUUID
     "%08x-%04x-%04x-%02x%02x-%s" % elements
   end
 
+  def <=>(other)
+    timestamp == other.timestamp ? 
+      worker_id <=> other.worker_id : timestamp <=> other.timestamp
+  end
+
+  def ==(other)
+    other.is_a?(LexicalUUID) &&
+      timestamp == other.timestamp &&
+        worker_id == other.worker_id
+  end
+
   private
     def from_bytes(bytes)
       time_high, time_low, worker_high, worker_low = bytes.unpack("NNNN")

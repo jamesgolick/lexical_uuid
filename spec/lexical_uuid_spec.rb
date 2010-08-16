@@ -104,4 +104,31 @@ describe "LexicalUUID" do
       @uuid.worker_id.should == LexicalUUID.worker_id
     end
   end
+
+  describe "comparing uuids" do
+    it "compares first by timestamp" do
+      (LexicalUUID.new(123) <=> LexicalUUID.new(234)).should == -1
+      (LexicalUUID.new(223) <=> LexicalUUID.new(134)).should == 1
+    end
+
+    it "compares by worker_id if the timestamps are equal" do
+      (LexicalUUID.new(123, 1) <=> LexicalUUID.new(123, 2)).should == -1
+      (LexicalUUID.new(123, 2) <=> LexicalUUID.new(123, 1)).should == 1
+      (LexicalUUID.new(123, 1) <=> LexicalUUID.new(123, 1)).should == 0
+    end
+  end
+
+  describe "equality" do
+    it "is equal when the timestamps and worker ids are equal" do
+      LexicalUUID.new(123, 123).should == LexicalUUID.new(123, 123)
+    end
+
+    it "is not equal when the timestamps are not equal" do
+      LexicalUUID.new(223, 123).should_not == LexicalUUID.new(123, 123)
+    end
+
+    it "is not equal when the worker_ids are not equal" do
+      LexicalUUID.new(123, 223).should_not == LexicalUUID.new(123, 123)
+    end
+  end
 end

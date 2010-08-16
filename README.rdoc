@@ -1,16 +1,25 @@
 = lexical_uuid
 
-Description goes here.
+UUIDs that are byte-ordered lamport clocks (timestamp, worker_id). Much simpler than type-1 UUID's crappy, weirdo layout.
 
-== Note on Patches/Pull Requests
- 
-* Fork the project.
-* Make your feature addition or bug fix.
-* Add tests for it. This is important so I don't break it in a
-  future version unintentionally.
-* Commit, do not mess with rakefile, version, or history.
-  (if you want to have your own version, that is fine but bump version in a commit by itself I can ignore when I pull)
-* Send me a pull request. Bonus points for topic branches.
+= Install
+  
+  sudo gem install lexical_uuid
+
+= Usage
+
+  ree-1.8.7-2010.02 > LexicalUUID.new
+  => #<LexicalUUID:0x1019400f0 @worker_id=2842420286492008582, @timestamp=1281991807929511>
+r ee-1.8.7-2010.02 > LexicalUUID.new.to_guid
+  => "00048df6-faef-2bb5-2772-4e30d6b86086" 
+r ee-1.8.7-2010.02 > LexicalUUID.new.to_bytes
+  => "\000\004\215\366\373\"\022\352'rN0\326\270206" 
+r ee-1.8.7-2010.02 > LexicalUUID.new(LexicalUUID.new.to_guid)
+  => #<LexicalUUID:0x101936118 @worker_id=2842420286492008582, @timestamp=1281991837642798> 
+r ee-1.8.7-2010.02 > LexicalUUID.new(LexicalUUID.new.to_bytes)
+  => #<LexicalUUID:0x101931690 @worker_id=2842420286492008582, @timestamp=1281991842330188> 
+r ee-1.8.7-2010.02 > LexicalUUID.new(Time.now)
+  => #<LexicalUUID:0x10192df18 @worker_id=2842420286492008582, @timestamp=1281991847641387> 
 
 == Copyright
 

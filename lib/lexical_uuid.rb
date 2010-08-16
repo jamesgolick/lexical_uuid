@@ -48,6 +48,9 @@ class LexicalUUID
   def initialize(bytes = nil)
     case bytes
     when String
+      if bytes.size != 16
+        raise ArgumentError, "#{bytes} was incorrectly sized. Must be 16 bytes."
+      end
       time_high, time_low, worker_high, worker_low = bytes.unpack("NNNN")
       @timestamp = (time_high << 32) | time_low
       @worker_id = (worker_high << 32) | worker_low

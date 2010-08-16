@@ -24,20 +24,30 @@ describe "LexicalUUID" do
   end
 
   describe "reinitializing the uuid from bytes" do
-    before do
-      @bytes = [1234567890 >> 32,
-                1234567890 & 0xffffffff,
-                9876543210 >> 32,
-                9876543210 & 0xffffffff].pack("NNNN")
-      @uuid  = LexicalUUID.new(@bytes)
-    end
+    describe "with a correctly sized byte array" do
+      before do
+        @bytes = [1234567890 >> 32,
+                  1234567890 & 0xffffffff,
+                  9876543210 >> 32,
+                  9876543210 & 0xffffffff].pack("NNNN")
+        @uuid  = LexicalUUID.new(@bytes)
+      end
 
-    it "correctly extracts the timestamp" do
-      @uuid.timestamp.should == 1234567890
-    end
+      it "correctly extracts the timestamp" do
+        @uuid.timestamp.should == 1234567890
+      end
 
-    it "correctly extracts the worker id" do
-      @uuid.worker_id.should == 9876543210
+      it "correctly extracts the worker id" do
+        @uuid.worker_id.should == 9876543210
+      end
+    end
+    
+    describe "with a mis-sized byte array" do
+      it "raises ArgumentError" do
+        lambda {
+          LexicalUUID.new("asdf")
+        }.should raise_error(ArgumentError)
+      end
     end
   end
 end

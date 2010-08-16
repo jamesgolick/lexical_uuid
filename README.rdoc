@@ -23,7 +23,8 @@ r ee-1.8.7-2010.02 > LexicalUUID.new(Time.now)
 
 == Credits
 
-  I borrowed some code from simple_uuid by @evan, @rk, etc.
+- The idea was basically stolen from Coda Hale (@coda).
+- I borrowed some code from simple_uuid by @evan, @rk, etc.
 
 == Copyright
 

@@ -11,6 +11,7 @@ begin
     gem.homepage = "http://github.com/jamesgolick/lexical_uuid"
     gem.authors = ["James Golick"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
+    gem.add_dependency "RubyInline", "=3.8.4"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new

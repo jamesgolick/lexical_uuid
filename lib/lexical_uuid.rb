@@ -52,7 +52,8 @@ class LexicalUUID
       @worker_id = worker_id
     when String
       if timestamp.size != 16
-        raise ArgumentError, "#{timestamp} was incorrectly sized. Must be 16 timestamp."
+        raise ArgumentError, 
+          "#{timestamp} was incorrectly sized. Must be 16 timestamp."
       end
       time_high, time_low, worker_high, worker_low = timestamp.unpack("NNNN")
       @timestamp = (time_high << 32) | time_low

@@ -21,6 +21,10 @@ r ee-1.8.7-2010.02 > LexicalUUID.new(LexicalUUID.new.to_bytes)
 r ee-1.8.7-2010.02 > LexicalUUID.new(Time.now)
   => #<LexicalUUID:0x10192df18 @worker_id=2842420286492008582, @timestamp=1281991847641387> 
 
+== Credits
+
+  I borrowed some code from simple_uuid by @evan, @rk, etc.
+
 == Copyright
 
 Copyright (c) 2010 James Golick. See LICENSE for details.

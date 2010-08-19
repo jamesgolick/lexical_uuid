@@ -14,11 +14,15 @@ describe "LexicalUUID" do
       @uuid.timestamp.should < Time.stamp
     end
 
+    it "has jitter" do
+      @uuid.jitter.should_not be_nil
+    end
+
     it "serializes to bytes" do
       expected_bytes = [@uuid.timestamp >> 32,
                         @uuid.timestamp & 0xffffffff,
-                        @uuid.worker_id >> 32,
-                        @uuid.worker_id & 0xffffffff].pack("NNNN")
+                        @uuid.jitter,
+                        @uuid.worker_id].pack("NNNN")
       @uuid.to_bytes.should == expected_bytes
     end
   end
@@ -28,8 +32,8 @@ describe "LexicalUUID" do
       before do
         @bytes = [1234567890 >> 32,
                   1234567890 & 0xffffffff,
-                  9876543210 >> 32,
-                  9876543210 & 0xffffffff].pack("NNNN")
+                  54321,
+                  12345].pack("NNNN")
         @uuid  = LexicalUUID.new(@bytes)
       end
 
@@ -37,8 +41,12 @@ describe "LexicalUUID" do
         @uuid.timestamp.should == 1234567890
       end
 
+      it "correctly extracts the jitter" do
+        @uuid.jitter.should == 54321
+      end
+
       it "correctly extracts the worker id" do
-        @uuid.worker_id.should == 9876543210
+        @uuid.worker_id.should == 12345
       end
     end
     
@@ -54,8 +62,9 @@ describe "LexicalUUID" do
   describe "initializing a uuid from a timestamp and worker_id" do
     before do
       @timestamp = 15463021018891620831
-      @worker_id = 9964740229835689317
-      @uuid      = LexicalUUID.new(@timestamp, @worker_id)
+      @jitter    = 1234125
+      @worker_id = 51341
+      @uuid      = LexicalUUID.new(@timestamp, @jitter, @worker_id)
     end
 
     it "sets the timestamp" do
@@ -65,11 +74,15 @@ describe "LexicalUUID" do
     it "sets the worker_id" do
       @uuid.worker_id.should == @worker_id
     end
+
+    it "sets the jitter" do
+      @uuid.jitter.should == @jitter
+    end
   end
 
   describe "converting a uuid in to a guid" do
     before do
-      @uuid = LexicalUUID.new(15463021018891620831, 9964740229835689317)
+      @uuid = LexicalUUID.new(15463021018891620831, 2320096881, 2389085541)
     end
     
     it "matches other uuid->guid implementations" do
@@ -86,8 +99,12 @@ describe "LexicalUUID" do
       @uuid.timestamp.should == 15463021018891620831
     end
 
+    it "correctly initializes the jitter" do
+      @uuid.jitter.should == 2320096881
+    end
+
     it "correctly initializes the worker_id" do
-      @uuid.worker_id.should == 9964740229835689317
+      @uuid.worker_id.should == 2389085541
     end
   end
 
@@ -103,6 +120,10 @@ describe "LexicalUUID" do
     it "uses the default worker_id" do
       @uuid.worker_id.should == LexicalUUID.worker_id
     end
+
+    it "initializes the jitter" do
+      @uuid.jitter.should_not be_nil
+    end
   end
 
   describe "comparing uuids" do
@@ -111,10 +132,16 @@ describe "LexicalUUID" do
       (LexicalUUID.new(223) <=> LexicalUUID.new(134)).should == 1
     end
 
-    it "compares by worker_id if the timestamps are equal" do
+    it "compares by jitter if the timestamps are equal" do
       (LexicalUUID.new(123, 1) <=> LexicalUUID.new(123, 2)).should == -1
       (LexicalUUID.new(123, 2) <=> LexicalUUID.new(123, 1)).should == 1
       (LexicalUUID.new(123, 1) <=> LexicalUUID.new(123, 1)).should == 0
+    end
+
+    it "compares by worker_id if the timestamps and jitter are equal" do
+      (LexicalUUID.new(123, 1, 0) <=> LexicalUUID.new(123, 1, 1)).should == -1
+      (LexicalUUID.new(123, 1, 1) <=> LexicalUUID.new(123, 1, 0)).should == 1
+      (LexicalUUID.new(123, 1, 1) <=> LexicalUUID.new(123, 1, 1)).should == 0
     end
   end
 
@@ -128,7 +155,7 @@ describe "LexicalUUID" do
     end
 
     it "is not equal when the worker_ids are not equal" do
-      LexicalUUID.new(123, 223).should_not == LexicalUUID.new(123, 123)
+      LexicalUUID.new(123, 223, 432).should_not == LexicalUUID.new(123, 123, 234)
     end
   end
 

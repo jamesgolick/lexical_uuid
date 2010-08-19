@@ -6,12 +6,12 @@ class String
   inline :C do |builder|
     builder.c <<-__END__
       static long fnv1a() {
-        long hash = 0xcbf29ce484222325;
+        long hash = 2166136261;
         long i = 0;
       
         for(i = 0; i < RSTRING(self)->len; i++) {
           hash ^= RSTRING(self)->ptr[i];
-          hash *= 0x100000001b3;
+          hash *= 16777619;
         }
 
         return hash;
@@ -43,12 +43,13 @@ class LexicalUUID
       end
   end
 
-  attr_reader :worker_id, :timestamp
+  attr_reader :worker_id, :jitter, :timestamp
 
-  def initialize(timestamp = nil, worker_id = nil)
+  def initialize(timestamp = nil, jitter = nil, worker_id = nil)
     case timestamp
     when Fixnum, Bignum
       @timestamp = timestamp
+      @jitter    = jitter || create_jitter
       @worker_id = worker_id || self.class.worker_id
     when String
       case timestamp.size
@@ -63,18 +64,20 @@ class LexicalUUID
       end
     when Time
       @timestamp = timestamp.stamp
+      @jitter    = create_jitter
       @worker_id = self.class.worker_id
     when nil
       @worker_id = self.class.worker_id
+      @jitter    = create_jitter
       @timestamp = Time.stamp
     end
   end
 
   def to_bytes
     [timestamp >> 32,
-      timestamp & 0xffffffff,
-      worker_id >> 32,
-      worker_id & 0xffffffff].pack("NNNN")
+     timestamp & 0xffffffff,
+     jitter,
+     worker_id].pack("NNNN")
   end
 
   # Also borrowed from simple_uuid
@@ -86,14 +89,20 @@ class LexicalUUID
   end
 
   def <=>(other)
-    timestamp == other.timestamp ? 
-      worker_id <=> other.worker_id : timestamp <=> other.timestamp
+    if timestamp == other.timestamp && jitter == other.jitter
+      worker_id <=> other.worker_id
+    elsif timestamp == other.timestamp
+      jitter <=> other.jitter
+    else
+      timestamp <=> other.timestamp
+    end
   end
 
   def ==(other)
     other.is_a?(LexicalUUID) &&
       timestamp == other.timestamp &&
-        worker_id == other.worker_id
+        jitter == other.jitter &&
+          worker_id == other.worker_id
   end
 
   def eql?(other)
@@ -106,8 +115,13 @@ class LexicalUUID
 
   private
     def from_bytes(bytes)
-      time_high, time_low, worker_high, worker_low = bytes.unpack("NNNN")
+      time_high, time_low, jitter, worker_id = bytes.unpack("NNNN")
       @timestamp = (time_high << 32) | time_low
-      @worker_id = (worker_high << 32) | worker_low
+      @jitter    = jitter
+      @worker_id = worker_id
+    end
+
+    def create_jitter
+      rand(2**32)
     end
 end

@@ -18,7 +18,7 @@ describe "LexicalUUID" do
       expected_bytes = [@uuid.timestamp >> 32,
                         @uuid.timestamp & 0xffffffff,
                         @uuid.worker_id >> 32,
-                        @uuid.worker_id & 0xffffffff].pack("NNNN")
+                        @uuid.worker_id & 0xffffffff].pack("iiii")
       @uuid.to_bytes.should == expected_bytes
     end
   end
@@ -29,7 +29,7 @@ describe "LexicalUUID" do
         @bytes = [1234567890 >> 32,
                   1234567890 & 0xffffffff,
                   9876543210 >> 32,
-                  9876543210 & 0xffffffff].pack("NNNN")
+                  9876543210 & 0xffffffff].pack("iiii")
         @uuid  = LexicalUUID.new(@bytes)
       end
 
@@ -69,25 +69,25 @@ describe "LexicalUUID" do
 
   describe "converting a uuid in to a guid" do
     before do
-      @uuid = LexicalUUID.new(15463021018891620831, 9964740229835689317)
+      @uuid = LexicalUUID.new(1286235492870036, -8436540173626891075)
     end
     
     it "matches other uuid->guid implementations" do
-      @uuid.to_guid.should == "d697afb0-a96f-11df-8a49-de718e668d65"
+      @uuid.to_guid.should == "d3910400-9467-a609-6963-eb8abd24a829"
     end
   end
 
   describe "initializing from a guid" do
     before do
-      @uuid = LexicalUUID.new("d697afb0-a96f-11df-8a49-de718e668d65")
+      @uuid = LexicalUUID.new("d3910400-a04d-1c02-69bd-2d82f733af24")
     end
     
     it "correctly initializes the timestamp" do
-      @uuid.timestamp.should == 15463021018891620831
+      @uuid.timestamp.should == 1286235366378912
     end
 
     it "correctly initializes the worker_id" do
-      @uuid.worker_id.should == 9964740229835689317
+      @uuid.worker_id.should == -9066382215542262793
     end
   end
 

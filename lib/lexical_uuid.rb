@@ -9,8 +9,8 @@ class String
         long hash = 0xcbf29ce484222325;
         long i = 0;
       
-        for(i = 0; i < RSTRING(self)->len; i++) {
-          hash ^= RSTRING(self)->ptr[i];
+        for(i = 0; i < RSTRING_LEN(self); i++) {
+          hash ^= RSTRING_PTR(self)[i];
           hash *= 0x100000001b3;
         }
 

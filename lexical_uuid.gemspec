@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{lexical_uuid}
-  s.version = "0.1.1"
+  s.version = "0.1.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Golick"]
-  s.date = %q{2010-08-19}
+  s.date = %q{2010-10-04}
   s.description = %q{UUIDs that are byte-ordered lamport clocks (timestamp, worker_id). Much simpler than type-1 UUID's crappy, weirdo layout.}
   s.email = %q{jamesgolick@gmail.com}
   s.extra_rdoc_files = [

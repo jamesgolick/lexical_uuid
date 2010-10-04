@@ -9,8 +9,8 @@ class String
         long hash = 2166136261;
         long i = 0;
       
-        for(i = 0; i < RSTRING(self)->len; i++) {
-          hash ^= RSTRING(self)->ptr[i];
+        for(i = 0; i < RSTRING_LEN(self); i++) {
+          hash ^= RSTRING_PTR(self)[i];
           hash *= 16777619;
         }
 
@@ -39,7 +39,9 @@ class LexicalUUID
 
     private
       def create_worker_id
-        Socket.gethostbyname(Socket.gethostname).first.fnv1a
+        fqdn = Socket.gethostbyname(Socket.gethostname).first
+        pid  = Process.pid
+        "#{fqdn}-#{pid}".fnv1a
       end
   end
 
@@ -57,7 +59,7 @@ class LexicalUUID
         from_bytes(timestamp)
       when 36
         elements = timestamp.split("-")
-        from_bytes(elements.join.to_a.pack('H32'))
+        from_bytes([elements.join].pack('H32'))
       else
         raise ArgumentError, 
           "#{timestamp} was incorrectly sized. Must be 16 timestamp."
@@ -77,7 +79,7 @@ class LexicalUUID
     [timestamp >> 32,
      timestamp & 0xffffffff,
      jitter,
-     worker_id].pack("NNNN")
+     worker_id].pack("iIii")
   end
 
   # Also borrowed from simple_uuid
@@ -115,10 +117,8 @@ class LexicalUUID
 
   private
     def from_bytes(bytes)
-      time_high, time_low, jitter, worker_id = bytes.unpack("NNNN")
+      time_high, time_low, @jitter, @worker_id = bytes.unpack("iIii")
       @timestamp = (time_high << 32) | time_low
-      @jitter    = jitter
-      @worker_id = worker_id
     end
 
     def create_jitter

@@ -22,7 +22,7 @@ describe "LexicalUUID" do
       expected_bytes = [@uuid.timestamp >> 32,
                         @uuid.timestamp & 0xffffffff,
                         @uuid.jitter,
-                        @uuid.worker_id].pack("NNNN")
+                        @uuid.worker_id].pack("iIii")
       @uuid.to_bytes.should == expected_bytes
     end
   end
@@ -33,7 +33,7 @@ describe "LexicalUUID" do
         @bytes = [1234567890 >> 32,
                   1234567890 & 0xffffffff,
                   54321,
-                  12345].pack("NNNN")
+                  12345].pack("iIii")
         @uuid  = LexicalUUID.new(@bytes)
       end
 
@@ -86,25 +86,25 @@ describe "LexicalUUID" do
     end
     
     it "matches other uuid->guid implementations" do
-      @uuid.to_guid.should == "d697afb0-a96f-11df-8a49-de718e668d65"
+      @uuid.to_guid.should == "b0af97d6-df11-6fa9-71de-498a658d668e"
     end
   end
 
   describe "initializing from a guid" do
     before do
-      @uuid = LexicalUUID.new("d697afb0-a96f-11df-8a49-de718e668d65")
+      @uuid = LexicalUUID.new("d3910400-a04d-1c02-69bd-2d82f733af24")
     end
     
     it "correctly initializes the timestamp" do
-      @uuid.timestamp.should == 15463021018891620831
+      @uuid.timestamp.should == 1286235366378912
     end
 
     it "correctly initializes the jitter" do
-      @uuid.jitter.should == 2320096881
+      @uuid.jitter.should == -2110931607
     end
 
     it "correctly initializes the worker_id" do
-      @uuid.worker_id.should == 2389085541
+      @uuid.worker_id.should == 615461879
     end
   end
 

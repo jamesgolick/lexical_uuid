@@ -6,8 +6,8 @@ class String
   inline :C do |builder|
     builder.c <<-__END__
       static long fnv1a() {
-        long hash = 2166136261;
-        long i = 0;
+        int hash = 2166136261;
+        int i    = 0;
       
         for(i = 0; i < RSTRING_LEN(self); i++) {
           hash ^= RSTRING_PTR(self)[i];

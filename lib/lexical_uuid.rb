@@ -1,17 +1,8 @@
 require "rubygems"
 require "socket"
 require "fnv"
-
-# Borrowed from the SimpleUUID gem
-class Time
-  def self.stamp
-    Time.now.stamp
-  end
-  
-  def stamp
-    to_i * 1_000_000 + usec
-  end
-end
+require File.join(File.dirname(__FILE__), "time_ext")
+require File.join(File.dirname(__FILE__), "increasing_microsecond_clock")
 
 class LexicalUUID
   class << self
@@ -29,7 +20,7 @@ class LexicalUUID
 
   attr_reader :worker_id, :timestamp
 
-  def initialize(timestamp = nil, worker_id = nil)
+  def initialize(timestamp = nil, worker_id = nil, timestamp_factory = IncreasingMicrosecondClock)
     case timestamp
     when Fixnum, Bignum
       @timestamp = timestamp
@@ -50,7 +41,7 @@ class LexicalUUID
       @worker_id = self.class.worker_id
     when nil
       @worker_id = self.class.worker_id
-      @timestamp = Time.stamp
+      @timestamp = timestamp_factory.call
     end
   end
 

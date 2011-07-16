@@ -1,35 +1,8 @@
 require "rubygems"
 require "socket"
-require "inline"
-
-class String
-  inline :C do |builder|
-    builder.c <<-__END__
-      static long fnv1a() {
-        long hash = 0xcbf29ce484222325;
-        long i = 0;
-      
-        for(i = 0; i < RSTRING_LEN(self); i++) {
-          hash ^= RSTRING_PTR(self)[i];
-          hash *= 0x100000001b3;
-        }
-
-        return hash;
-      }
-    __END__
-  end
-end
-
-# Borrowed from the SimpleUUID gem
-class Time
-  def self.stamp
-    Time.now.stamp
-  end
-  
-  def stamp
-    to_i * 1_000_000 + usec
-  end
-end
+require "fnv"
+require File.join(File.dirname(__FILE__), "time_ext")
+require File.join(File.dirname(__FILE__), "increasing_microsecond_clock")
 
 class LexicalUUID
   class << self
@@ -41,13 +14,13 @@ class LexicalUUID
       def create_worker_id
         fqdn = Socket.gethostbyname(Socket.gethostname).first
         pid  = Process.pid
-        "#{fqdn}-#{pid}".fnv1a
+        FNV.new.fnv1a_64("#{fqdn}-#{pid}")
       end
   end
 
   attr_reader :worker_id, :timestamp
 
-  def initialize(timestamp = nil, worker_id = nil)
+  def initialize(timestamp = nil, worker_id = nil, timestamp_factory = IncreasingMicrosecondClock)
     case timestamp
     when Fixnum, Bignum
       @timestamp = timestamp
@@ -68,7 +41,7 @@ class LexicalUUID
       @worker_id = self.class.worker_id
     when nil
       @worker_id = self.class.worker_id
-      @timestamp = Time.stamp
+      @timestamp = timestamp_factory.call
     end
   end
 

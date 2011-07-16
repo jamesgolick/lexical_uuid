@@ -1,24 +1,6 @@
 require "rubygems"
 require "socket"
-require "inline"
-
-class String
-  inline :C do |builder|
-    builder.c <<-__END__
-      static long fnv1a() {
-        long hash = 0xcbf29ce484222325;
-        long i = 0;
-      
-        for(i = 0; i < RSTRING_LEN(self); i++) {
-          hash ^= RSTRING_PTR(self)[i];
-          hash *= 0x100000001b3;
-        }
-
-        return hash;
-      }
-    __END__
-  end
-end
+require "fnv"
 
 # Borrowed from the SimpleUUID gem
 class Time
@@ -41,7 +23,7 @@ class LexicalUUID
       def create_worker_id
         fqdn = Socket.gethostbyname(Socket.gethostname).first
         pid  = Process.pid
-        "#{fqdn}-#{pid}".fnv1a
+        FNV.new.fnv1a_64("#{fqdn}-#{pid}")
       end
   end
 

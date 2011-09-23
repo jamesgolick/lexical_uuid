@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "lexical_uuid"
-  s.version = "0.1.6"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["James Golick"]
@@ -23,7 +23,9 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "lexical_uuid.gemspec",
+    "lib/increasing_microsecond_clock.rb",
     "lib/lexical_uuid.rb",
+    "lib/time_ext.rb",
     "spec/lexical_uuid_spec.rb",
     "spec/spec.opts",
     "spec/spec_helper.rb"
@@ -38,14 +40,14 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_development_dependency(%q<rspec>, [">= 1.2.9"])
-      s.add_runtime_dependency(%q<RubyInline>, ["> 3.8.4"])
+      s.add_runtime_dependency(%q<fnv>, [">= 0"])
     else
       s.add_dependency(%q<rspec>, [">= 1.2.9"])
-      s.add_dependency(%q<RubyInline>, ["> 3.8.4"])
+      s.add_dependency(%q<fnv>, [">= 0"])
     end
   else
     s.add_dependency(%q<rspec>, [">= 1.2.9"])
-    s.add_dependency(%q<RubyInline>, ["> 3.8.4"])
+    s.add_dependency(%q<fnv>, [">= 0"])
   end
 end
 

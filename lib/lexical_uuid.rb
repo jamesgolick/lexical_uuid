@@ -31,7 +31,7 @@ class LexicalUUID
         from_bytes(timestamp)
       when 36
         elements = timestamp.split("-")
-        from_bytes(elements.join.to_a.pack('H32'))
+        from_bytes(Array(elements.join).pack('H32'))
       else
         raise ArgumentError, 
           "#{timestamp} was incorrectly sized. Must be 16 timestamp."
